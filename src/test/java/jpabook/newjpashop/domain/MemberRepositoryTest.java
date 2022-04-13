@@ -1,5 +1,6 @@
 package jpabook.newjpashop.domain;
 
+import jpabook.newjpashop.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class MemberRepositoryTest {
 
-    @Autowired MemberRepository memberRepository;
+    @Autowired
+    MemberRepository memberRepository;
     
     @Test
     @Transactional
@@ -22,7 +24,7 @@ class MemberRepositoryTest {
         Member member = Member.builder()
                 .username("테스트")
                 .build();
-        
+
         // given
         Long saveId = memberRepository.save(member);
         Member findMember = memberRepository.findById(saveId);
@@ -30,5 +32,4 @@ class MemberRepositoryTest {
         // then
         assertThat(saveId).isEqualTo(findMember.getId());
     }
-    
 }
