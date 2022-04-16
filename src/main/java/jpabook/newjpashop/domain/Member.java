@@ -25,9 +25,7 @@ public class Member {
     @Embedded
     private Address address;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member") // Order Class 의 member 필드
     private List<Order> orders = new ArrayList<>();
-
-
-
 }

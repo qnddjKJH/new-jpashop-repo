@@ -14,6 +14,9 @@
 - H2 DataBase
   - 개발환경
 
+### Builder 관련 참고하면 좋은 글
+- [Builder 기반 안전한 객체 생성](https://cheese10yun.github.io/spring-builder-pattern/)
+  - 여기서는 Builder.default 단순 구현함
 
 ### Reference Documentation
 

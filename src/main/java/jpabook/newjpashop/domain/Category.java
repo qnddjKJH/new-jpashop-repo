@@ -1,6 +1,7 @@
 package jpabook.newjpashop.domain;
 
 import jpabook.newjpashop.domain.item.Item;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -30,6 +31,7 @@ public class Category {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
+    @Builder.Default
     @OneToMany(mappedBy = "parent")
     private List<Category> child = new ArrayList<>();
 }
