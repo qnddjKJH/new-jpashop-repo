@@ -15,4 +15,15 @@ import javax.persistence.Entity;
 public class Book extends Item {
     private String author;
     private String isbn;
+
+    /**
+     * 비즈니스 로직
+     */
+
+    // Book Update
+    public void changeBookInfo(String name, int price, String author, String isbn) {
+        this.changeItemInfo(name, price);
+        this.author = author;
+        this.isbn = isbn;
+    }
 }

@@ -64,6 +64,11 @@ public class OrderRepository {
 
     /**
      * JPA Criteria
+     * 단점 - 유지보수가 너무 힘들다. : 실무에 적합하지 않음
+     * 어떠한 쿼리가 날라갈지 예측 하기가 힘들다.
+     *
+     * 동적 쿼리, 정적 쿼리 복잡해진다고 느껴지면
+     * QueryDsl 로 작업하는 것을 적극 추천한다.
      */
     public List<Order> findAllByCriteria(OrderSearch orderSearch) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
