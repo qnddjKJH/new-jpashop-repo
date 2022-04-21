@@ -9,12 +9,38 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    // 가장 안 좋은 버전
+    @GetMapping("/api/v1/members")
+    public List<Member> membersV1() {
+        // 엔티티를 직접적으로 반환한다? 진짜진짜진짜 추천하지 않는다.
+        // 기본적으로 모든 값이 외부로 노출된다.
+        // 회원 정보를 원하는데 엔티티를 주면 회원기준 주문 정보또한 넘어간다.
+        // 원하지 않는 정보 같은 경우 @JsonIgnore 어노테이션을 해당 필드에 넣어줘도 되지만 --> 프레젠테이션 로직이 엔티티에 추가되기 시작함
+        // 주문 정보도 필요한 다른 API 라면??...심각해진다.
+        // 엔티티를 변경하게 되는 경우 API 스펙이 변경됨으로 API 를 사용하는 측에서는?? 매우 곤란해진다.
+        // 몇번이고 강조하신다. 엔티티는 순정 그대로를 유지한다.
+        // 아예 강제시키신다. 하지마라 그냥
+        return memberService.findMembers();
+    }
+
+    @GetMapping("/api/v2/members")
+    public Result membersV2() {
+        List<Member> members = memberService.findMembers();
+        List<MemberDto> collect = members.stream()
+                .map(m -> new MemberDto(m.getUsername()))
+                .collect(Collectors.toList());
+        // 이렇게 다른 데이터도 넣기 괜찮아 진다.
+        return new Result(collect.size(), collect);
+    }
 
     @PostMapping("/api/v1/members")
     public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member) {
@@ -77,6 +103,19 @@ public class MemberApiController {
 
     @Data
     static class UpdateMemberRequest {
+        private String name;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private int count;
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
         private String name;
     }
 }
