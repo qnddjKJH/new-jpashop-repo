@@ -95,9 +95,34 @@ public class OrderRepository {
 
     public List<Order> findAllWithMemberDelivery() {
         return em.createQuery(
-                "select o from Order o " +
+                "select distinct o from Order o " +
                         "join fetch o.member m " +
                         "join fetch o.delivery d", Order.class
         ).getResultList();
     }
+
+    public List<Order> findAllWithItem() {
+        // distinct 기능
+        // 1. distinct 를 쿼리를 붙여서 보낸다.
+        // 2. jpa 에서 자체적으로 order 가 같은 id 값이면
+        // == order 의 객체가 같다면 jpa 가 객체를 중복 제거 -> 애플리케이션쪽이다.
+        // fetch join 으로 쿼리가 10번 넘게 나가던게 여기서 1번 나간다.
+        return em.createQuery(
+                "select distinct o from Order o " +
+                        "join fetch o.member m " +
+                        "join fetch o.delivery d " +
+                        "join fetch o.orderItems oi " +
+                        "join fetch oi.item i", Order.class
+        ).getResultList();
+        // 치명적 단점 :: 일대다 관계를 fetch join 하면
+        // 페이징이 불가능 -- 불가능하며 사용하지 말 것 다른 대안을 사용
+        // 메모리에서 작업하겠다고 하이버네이트가 warn 메시지를 쏜다
+        // 몇 건 안되면 상관은 없는데 1만건 100만건이 어플리케이션
+        // 메모리에 퍼올려진다면?? 끔찍한 일이 발생한다.
+        // 이건 join 의 특징때문 개수 뻥튀기로 갯수를 예측할 수 없기 때문이다.
+        
+        // + 컬렉션 페치 조인은 1개만 둘 이상에서 사용 하지 말것
+        // 데이터 부정합이 일어날 수 있다.
+    }
+
 }
