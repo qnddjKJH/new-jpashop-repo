@@ -1,7 +1,6 @@
 package jpabook.newjpashop.repository;
 
 import jpabook.newjpashop.domain.Order;
-import jpabook.newjpashop.repository.order.simplequery.OrderSimpleQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -120,9 +119,30 @@ public class OrderRepository {
         // 몇 건 안되면 상관은 없는데 1만건 100만건이 어플리케이션
         // 메모리에 퍼올려진다면?? 끔찍한 일이 발생한다.
         // 이건 join 의 특징때문 개수 뻥튀기로 갯수를 예측할 수 없기 때문이다.
-        
+
+        // 쿼리는 한방에 나가지만
+        // 중복 데이터가 많아진다.(중복되는 컬럼도 있음)
+
         // + 컬렉션 페치 조인은 1개만 둘 이상에서 사용 하지 말것
         // 데이터 부정합이 일어날 수 있다.
     }
 
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                        "select distinct o from Order o " +
+                                "join fetch o.member m " +
+                                "join fetch o.delivery d", Order.class
+                ).setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+        // xtoOne 관계라서 페이징이 잘 먹힌다.
+        // 하지만 OrderItems 쿼리가 너무 나가서 문제
+        // 해결 방안 1
+        // default_batch_fetch_size <- application.yml  hibernate 옵션으로 크기를 준다 - 강사님 추천픽
+        // 클래스 범위, 필드 범위에서 @BatchSize 어노테이션으로 지정도 가능하긴 하다.
+        // 크기만큼 미리 다 불러온다. in 쿼리로 가져온다.
+
+        // 중복데이터가 최대한으로 줄어든다. (최적화되어서 나옴)
+        // 정확하게 필요한 데이터만을 가져올 수 있다. 쿼리가 조금 더 나가긴 한다.
+    }
 }

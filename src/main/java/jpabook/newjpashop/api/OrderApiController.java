@@ -9,6 +9,7 @@ import jpabook.newjpashop.repository.OrderSearch;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -47,6 +48,23 @@ public class OrderApiController {
     @GetMapping("/api/v3/orders")
     public List<OrderDto> ordersV3() {
         List<Order> orders = orderRepository.findAllWithItem();
+
+        List<OrderDto> result = orders.stream()
+                .map(OrderDto::new)
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderDto> ordersV3_paging(
+            @RequestParam(value = "offset", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "100") int limit) {
+
+        List<Order> orders = orderRepository.findAllWithMemberDelivery(offset, limit);
+        // XtoOne 관계의 콜렉션들을 불러온다. --> 페이징 가능
+        // OrderItems 는 아직 해결 안됨
+        // OrderItems 는 깊이 만큼 쿼리가 또 나간다.
+        // Member, Delivery 는 처음 한번만 쿼리가 나감
 
         List<OrderDto> result = orders.stream()
                 .map(OrderDto::new)
