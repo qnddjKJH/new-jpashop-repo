@@ -1,38 +1,25 @@
 package jpabook.newjpashop.repository;
 
 import jpabook.newjpashop.domain.Member;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Repository
-public class MemberRepository {
+public interface MemberRepository extends JpaRepository<Member, Long> {
+    // JpaRepository
+    // 개발자들이 공통적으로 사용할 수 있는 save, findAll 등
+    // 공통적으로 사용하는 메소드들이 이미 다 구현되어 있다
 
-    @PersistenceContext
-    private EntityManager em;
-    // 스프링 부트를 사용하기에 @PersistenceContext 지정하면
-    // EntityManagerFactory 에서 EntityManager 를 가져오는 코드를 쓰지 않아도 된다.
-    // 왜? 스프링 컨테이너 위에서 동작해서 스프링 부트가 다 해줌
-
-    public Long save(Member member) {
-        em.persist(member);
-        return member.getId();
-    }
-
-    public Member findById(Long findId) {
-        return em.find(Member.class, findId);
-    }
-
-    public List<Member> findByName(String username) {
-        return em.createQuery("select m from Member m where m.username = :username", Member.class)
-                .setParameter("username", username)
-                .getResultList();
-    }
-
-    public List<Member> findAll() {
-        return em.createQuery("select m from Member m", Member.class)
-                .getResultList();
-    }
+    List<Member> findByUsername(String username);
 }
+
+/**
+ *  단순 편리함을 넘어서 마법같은 놀라운 개발 생산성을 제공해준다
+ *  진짜 너무 환상적인데 만능은 아니다. - 경험담
+ *  Spring Data JPA 는 JPA 를 사용해서 이런 기능을 제공할 뿐
+ *  결국 JPA 자체를 잘 이해해야 한다. 
+ *  
+ *  진짜 돌고돌아 4년만에 왔다.
+ *  Spring Data JPA 원리를 모르고
+ *  사용만 하던 그때에서
+ */
