@@ -10,6 +10,8 @@ import jpabook.newjpashop.repository.order.query.OrderFlatDto;
 import jpabook.newjpashop.repository.order.query.OrderItemQueryDto;
 import jpabook.newjpashop.repository.order.query.OrderQueryDto;
 import jpabook.newjpashop.repository.order.query.OrderQueryRepository;
+import jpabook.newjpashop.service.query.OrderDto;
+import jpabook.newjpashop.service.query.OrderQueryService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,14 +52,24 @@ public class OrderApiController {
         return collect;
     }
 
+    private final OrderQueryService orderQueryService;
+
     @GetMapping("/api/v3/orders")
-    public List<OrderDto> ordersV3() {
-        List<Order> orders = orderRepository.findAllWithItem();
+    public List<jpabook.newjpashop.service.query.OrderDto> ordersV3() {
+        /*List<Order> orders = orderRepository.findAllWithItem();
 
         List<OrderDto> result = orders.stream()
                 .map(OrderDto::new)
                 .collect(Collectors.toList());
-        return result;
+        return result;*/
+
+        // OSIV 껏을 때
+        // OSIV 옵션 끄는 법
+        // application.yml
+        // spring.jpa.open-in-view: false (default : true)
+        // false ==> Transaction 종료 시 영속성 컨텍스트 종료 + DB 커넥션 반환
+        // 즉 트랜잭션 안에서 모든 처리를 다 해줘야함 (종료되면 지연로딩 사라짐)
+        return orderQueryService.ordersV3();
     }
 
     @GetMapping("/api/v3.1/orders")
